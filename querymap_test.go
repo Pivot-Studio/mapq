@@ -16,6 +16,7 @@ func TestQueryMap(t *testing.T) {
 		want    bool
 		wantErr bool
 	}{
+		// 基础功能测试
 		{"basic true case", args{map[string]interface{}{"a": 1}, "a==1"}, true, false},
 		{"basic false case", args{map[string]interface{}{"a": 1}, "a==2"}, false, false},
 		{"and true case", args{map[string]interface{}{"a": 1, "b": 2}, "a==1&&b==2"}, true, false},
@@ -23,13 +24,16 @@ func TestQueryMap(t *testing.T) {
 		{"or true case", args{map[string]interface{}{"a": 1, "b": 2}, "a==1||b==2"}, true, false},
 		{"or true case2", args{map[string]interface{}{"a": 1, "b": 2}, "a==1||b==3"}, true, false},
 		{"or false case", args{map[string]interface{}{"a": 1, "b": 2}, "a<=0||b>3"}, false, false},
+		{"LEQ SM case", args{map[string]interface{}{"a": 1, "b": 2}, "a<2&&b>=2"}, true, false},
 		{"nested case", args{map[string]interface{}{"a": 1, "b": 2, "c": map[string]interface{}{"d": 3}},
 			"a==1&&b==2&&c.d==3"}, true, false},
+		{"NEQ case", args{map[string]interface{}{"a": 1, "b": 2}, "a!=1||b!=2"}, false, false},
+		{"parentheses case", args{map[string]interface{}{"a": 1, "b": 2}, "a==1&&!(b==2||b==3)"}, false, false},
+		// 高级功能测试
 		{"add case", args{map[string]interface{}{"a": 1, "b": 2}, "a+b==3"}, true, false},
 		{"add case false", args{map[string]interface{}{"a": 1, "b": 2}, "a+b<3"}, false, false},
 		{"mul case", args{map[string]interface{}{"a": 3, "b": 2}, "a*b==6"}, true, false},
 		{"div case", args{map[string]interface{}{"a": 3, "b": 2}, "a/b==1.5"}, true, false},
-		{"parentheses case", args{map[string]interface{}{"a": 1, "b": 2}, "a==1&&!(b==2||b==3)"}, false, false},
 		{"parentheses mul case", args{map[string]interface{}{"a": 3, "b": 2}, "(a+b)*b==10"}, true, false},
 		{"parentheses mul false case", args{map[string]interface{}{"a": 3, "b": 2}, "(a+b)*b<5"}, false, false},
 		{"string case", args{map[string]interface{}{"a": "1", "b": "2"}, "a=='1'&&b=='2'"}, true, false},
