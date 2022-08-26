@@ -12,11 +12,7 @@ type Parser struct {
 
 func (p *Parser) boolexp() (node Node, err error) {
 	ch := p.lexer.SetCheckpoint()
-	defer func() {
-		if err != nil {
-			p.lexer.GobackTo(ch)
-		}
-	}()
+	defer p.goback(ch, err)
 	node, err = p.compare()
 	if err != nil {
 		return nil, err
@@ -43,11 +39,7 @@ func (p *Parser) boolexp() (node Node, err error) {
 
 func (p *Parser) boolean() (node Node, err error) {
 	ch1 := p.lexer.SetCheckpoint()
-	defer func() {
-		if err != nil {
-			p.lexer.GobackTo(ch1)
-		}
-	}()
+	defer p.goback(ch1, err)
 	_, err = p.lexer.ScanType(TYPE_RES_TRUE)
 	if err == nil {
 		return &BoolConstNode{Val: true}, nil
@@ -92,11 +84,7 @@ func (p *Parser) boolean() (node Node, err error) {
 
 func (p *Parser) compare() (node Node, err error) {
 	ch := p.lexer.SetCheckpoint()
-	defer func() {
-		if err != nil {
-			p.lexer.GobackTo(ch)
-		}
-	}()
+	defer p.goback(ch, err)
 
 	bn, err := p.boolean()
 	if err != nil {
@@ -192,11 +180,7 @@ func (p *Parser) goback(ch Checkpoint, err error) {
 
 func (p *Parser) symbol() (n Node, err error) {
 	ch := p.lexer.SetCheckpoint()
-	defer func() {
-		if err != nil {
-			p.lexer.GobackTo(ch)
-		}
-	}()
+	defer p.goback(ch, err)
 	code, _, eos := p.lexer.Scan()
 	if eos {
 		return nil, ErrEOS
@@ -269,11 +253,7 @@ func (p *Parser) number() (n Node, err error) {
 
 func (p *Parser) varblock() (n *VarNode, err error) {
 	ch := p.lexer.SetCheckpoint()
-	defer func() {
-		if err != nil {
-			p.lexer.GobackTo(ch)
-		}
-	}()
+	defer p.goback(ch, err)
 	token, err := p.lexer.ScanType(TYPE_VAR)
 	if err != nil {
 		return nil, err

@@ -1,16 +1,8 @@
 package mapq
 
-import "reflect"
-
 // Node 节点
 type Node interface {
 	Eval(data map[string]interface{}) interface{}
-}
-
-// BinNode 表达式节点
-type BinNode struct {
-	Left, Right Node
-	Op          int
 }
 
 func toF64(i interface{}) float64 {
@@ -41,6 +33,37 @@ func trytoF64(i interface{}) interface{} {
 	return i
 }
 
+func equal(left, right interface{}) bool {
+	if left == right {
+		return true
+	}
+	left, right = trytoF64(left), trytoF64(right)
+	switch left.(type) {
+	case float64:
+		if val, ok := right.(float64); ok {
+			return left.(float64) == val
+		}
+		return false
+	case string:
+		if val, ok := right.(string); ok {
+			return left.(string) == val
+		}
+		return false
+	case bool:
+		if val, ok := right.(bool); ok {
+			return left.(bool) == val
+		}
+		return false
+	}
+	return false
+}
+
+// BinNode 表达式节点
+type BinNode struct {
+	Left, Right Node
+	Op          int
+}
+
 // Eval 查询
 func (n *BinNode) Eval(data map[string]interface{}) interface{} {
 	left := n.Left.Eval(data)
@@ -60,9 +83,9 @@ func (n *BinNode) Eval(data map[string]interface{}) interface{} {
 	fright := toF64(right)
 	switch n.Op {
 	case TYPE_EQ:
-		return reflect.DeepEqual(trytoF64(left), trytoF64(right))
+		return equal(left, right) //reflect.DeepEqual(trytoF64(left), trytoF64(right))
 	case TYPE_NEQ:
-		return !reflect.DeepEqual(trytoF64(left), trytoF64(right))
+		return !equal(left, right) //!reflect.DeepEqual(trytoF64(left), trytoF64(right))
 	case TYPE_LG:
 		return fleft > fright
 	case TYPE_LEQ:
