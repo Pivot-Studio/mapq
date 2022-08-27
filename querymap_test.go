@@ -72,7 +72,17 @@ func BenchmarkRunQuery(b *testing.B) {
 	datamap := make(map[string]interface{})
 	json.Unmarshal([]byte(obj), &datamap)
 	p := &Parser{}
-	root, _ := p.Parse("!(component_pos_x>300||component_pos_y<160&&component_extra.FontSize==12)||component_type=='TEXT'")
+	query := "!(component_pos_x>200||component_pos_y<160&&component_extra.FontSize==12)||(component_type=='TEXT1'&&(component_required==true||component_page!=null))"
+	root, _ := p.Parse(query)
+	b.Run("parse bench", func(b *testing.B) {
+
+		for i := 0; i < b.N; i++ {
+			_, err := p.Parse(query)
+			if err != nil {
+				b.Error(err)
+			}
+		}
+	})
 	b.Run("query bench", func(b *testing.B) {
 
 		for i := 0; i < b.N; i++ {
