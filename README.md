@@ -13,7 +13,7 @@ mapq.QueryMap(map[string]interface{}{"a": 1, "b": 2, "c": map[string]interface{}
 ### 知识点
 - 递归下降分析法
 - 编译原理
-- 抽象语法树（AST）（完成此任务不一定需要抽象语法树）
+- 抽象语法树（AST）
 
 
 ### 参考资料
@@ -51,3 +51,8 @@ mapq.QueryMap(map[string]interface{}{"a": 1, "b": 2, "c": map[string]interface{}
 
 - 小括号：改变运算优先级
 - 嵌套map查询
+
+
+## TODO
+
+数组语法
